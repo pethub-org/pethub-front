@@ -34,7 +34,7 @@ const Navbar = () => {
 
   const logout = async (e) => {
     e.preventDefault();
-    await axios.post('http://localhost:8080/auth/logout', {});
+    await axios.post('/auth/logout', {});
     socket.disconnect();
     setAuth({})
     localStorage.removeItem('user');
