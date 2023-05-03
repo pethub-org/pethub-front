@@ -1,6 +1,6 @@
 import "./stories.scss"
 import useAuth from "../../hooks/useAuth";
-import defaultUser from '../../assets/defaultUser.png'
+
 const Stories = () => {
 
   const {auth,setAuth} = useAuth()
@@ -29,10 +29,12 @@ const Stories = () => {
     },
   ];
 
+ 
+
   return (
     <div className="stories">
       <div className="story">
-          <img src={auth?.photos?.length > 0 ?  auth?.photos[0].url  : defaultUser} alt={auth?.firstname} />
+          <img src={auth.profilePic} alt={auth.firstname} />
           <span>{auth.firstname}</span>
           <button>+</button>
         </div>

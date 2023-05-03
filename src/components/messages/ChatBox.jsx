@@ -8,38 +8,78 @@ import defaultImg from '../../assets/defaultUser.png'
 import useAuth from '../../hooks/useAuth'
 import { axiosPrivate } from '../../api/axios'
 import useSocket from '../../hooks/useSocket'
+import { Link } from 'react-router-dom'
 
-const ChatBox = ({ chatData, setShowChatBox,messages,setMessages }) => {
+const ChatBox = ({ conversations,chatData, setShowChatBox,messages,setMessages }) => {
     
     const [message, setMessage] = useState('');
-    const [conversationId, setCOnversationId] = useState();
+    // const [messages, setMessages] = useState([])
+    const [conversation,setConversation] = useState();
     const { auth } = useAuth();
     const { socket } = useSocket();
-
  
-    
+    // useEffect(() => {
+    //     const fetchCurrentConversation = async () => {
+    //         const response = await axiosPrivate.get(`/conversations/${chatData._id}/${auth._id}`)
+    //         setCOnversationId(response.data._id)
+    //         return response.data;
+    //     }
+    //     const conversation = fetchCurrentConversation();
+    //     console.log({conversation})
+
+    //     axiosPrivate.get(`/messages/conversation/${conversation._id}`).then(response => {
+    //         setMessage(response.data)
+    //     })
+    // }, [])
+
+
+    // useEffect(() => {
+    //     axiosPrivate.get(`/messages/conversation/${chatData.conversationId}`)
+    // },[])
 
     const handleSendMessage = (e) => {
         e.preventDefault();
-        console.log({ message })
-        console.log({ chatData})
+        if (e.key === 'Enter') {
+            //   console.log({ message })
+        // console.log({ chatData})
         axiosPrivate.post(`/messages`, {
             sender: auth._id,
             conversationId:chatData.conversationId,
-            text:message
+            text: message,
+            recieverId:chatData._id
         }).then(response => {
-            setMessages(prev => [...prev,response.data])
-            socket.emit('sendMessage',)
+            setMessages(prev => [...prev, response.data])
+            // 
+            // console.log({chatData})
+            socket.emit('sendMessage', {
+                senderId: auth._id,
+                text: message,
+                conversationId: chatData.conversationId,
+                recieverId: chatData._id
+            })
         })
+        }
     }
+    useEffect(() => {
+        socket.on('getMessage', (data) => {
+            setMessages(prev => [...prev,data.message])
+        })
+
+        return () => {
+            socket.off('getMessage');
+        }
+    }, [socket.id,setMessages,socket])
     return (
-        <div className={styles.relative}>
+        // <div className={styles.relative}>
             <div className={styles.container} >
 
                 {/* header */}
                 <div className={styles.header}>
-                    <img src={chatData.photos.length <1 ? defaultImg : chatData.photos[0].url} alt="profile picture" className={styles.img} />
+                <img src={chatData?.currentPhoto ? chatData?.currentPhoto?.url : defaultImg} style={{ width: '25px', height: '25px', borderRadius: '50%' }} alt="profile" className={styles.img} />
+                <Link to={"/profile/"+chatData._id} style={{color:'white'}}>
                     <p>{chatData.firstname} {' '} {chatData.lastname}</p>
+                
+                </Link>
                     <div style={{cursor:'pointer'}} onClick={() => setShowChatBox(prev => !prev)}>X</div>
                 </div>
 
@@ -50,31 +90,35 @@ const ChatBox = ({ chatData, setShowChatBox,messages,setMessages }) => {
                         if (message.sender === auth._id) {
                             return <MyMessage message={message.text} key={message._id}/>
                         } else {
-                            return <UserMessage message={message.text} key={message._id}/>
+                            return <UserMessage userPhoto={chatData?.currentPhoto?.url} message={message.text} key={message._id}/>
                         }
                     }) : <p style={{marginLeft:'16px',marginTop:'4px'}}>No messages yet</p>}
                    </div>
 
                     
-                     <div className={styles.footer}>
+                 
+                </div>
+
+                <div className={styles.footer} style={{ zIndex: '1000'}}>
                     <div className={styles.footerContent} >
 
-                        <input type="text" placeholder='Type here'
+                            <input type="text" placeholder='Type here'
+                                style={{marginTop:'16px'}}
                             className={styles.footerInput}
                             value={message}
-                            onChange={(e) => setMessage(e.target.value)} />
-
-                        <button className={styles.footerButton} onClick={handleSendMessage}>
-                            send
-                            {/* <FontAwesomeIcon icon={faPaperPlane} className="rotate-45" /> */}
-                        </button>
+                                onChange={(e) => setMessage(e.target.value)} onKeyDown={(e) => {
+                                    if (e.key === 'Enter' && !e.shiftKey && e.target.value !== '') {
+                                        handleSendMessage(e)
+                                        setMessage('')
+                                    }
+                                }} />
+                        
 
                     </div>
                 </div>
-                </div>
               
             </div>
-        </div>
+        // </div>
 
     )
 }

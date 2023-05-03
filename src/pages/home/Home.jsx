@@ -6,31 +6,27 @@ import Feed from "../../components/feed/feed"
 import { useEffect, useState } from "react"
 import useAuth from "../../hooks/useAuth"
 import useAxiosPrivate from "../../hooks/useAxiosPrivate"
+import Game from "../../components/games/Game"
 
 const Home = () => {
   const [posts, setPosts] = useState([]);
+  
   const axios = useAxiosPrivate();
   const { auth } = useAuth();
 
   useEffect(() => {
-    const controller = new AbortController();
-
-    axios.get("/api/posts/timeline/all/" + auth._id,{signal:controller}).then(response => {
+    axios.get("/api/posts/timeline/all/"+auth._id ).then(response => {
           setPosts(response.data.sort((p1,p2)=>{
           return new Date(p2.createdAt) - new Date (p1.createdAt);
         }))
     })
-
-    return () => {
-      controller.abort();
-    }
-    
-  }, [auth._id,axios])
+  }, [axios])
+ 
   
   return (
-    <div className="home">
-      <Stories/>
-      {/* <Share /> */}
+    <div className="home" >
+{/*<Stories /> */}
+      {/* <Share />*/} 
       <Feed posts={posts} setPosts={setPosts}/>
       
       <Posts posts={posts} setPosts={setPosts}/>

@@ -4,8 +4,7 @@ import "./login.scss";
 import Logo from '../../assets/logo.png'
 import useAuth from "../../hooks/useAuth";
 import axios from '../../api/axios';
-import useSocket from '../../hooks/useSocket';
-
+import useSocket from "../../hooks/useSocket";
 
 const Login = () => {
   const { auth, setAuth } = useAuth();
@@ -21,8 +20,11 @@ const loginService = async({email,password}) => {
   const res = await axios.post('/auth/login', { email, password })
   socket.connect();
   socket.emit('addUser',res.data._id)
+  const currentPhoto = res.data.photos.find(photo => photo.isMain)
+  
+  localStorage.setItem('user', JSON.stringify({ ...res.data, currentPhoto }));
 
-  setAuth(res.data)
+  setAuth({ ...res.data, currentPhoto })
   return res.data;
 }
 

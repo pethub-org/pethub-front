@@ -13,13 +13,8 @@ const MessageDropdown = () => {
     const axiosPrivate = useAxiosPrivate();
     
     useEffect(() => {
-        const controller = new AbortController();
-        axiosPrivate.get(`/conversations/${auth._id}`,{signal:controller})
+        axiosPrivate.get(`/conversations/${auth._id}`)
             .then(response => setConversations(response.data.conversation))
-
-        return () => {
-            controller.abort();
-        }
     }, [])
     
     let content;

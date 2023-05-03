@@ -14,13 +14,14 @@ import ProfilePicture from '../../assets/defaultUser.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDoorClosed,faDoorOpen } from '@fortawesome/free-solid-svg-icons'
 import Notification from "../notifications/Notification";
-import dropdown from "./dropdown";
-import Dropdown from "./dropdown";
+import NotifcationDropdown from "./NotifcationDropdown";
 import MessageDropdown from "../messages/MessageDropdown";
 import useAuth from "../../hooks/useAuth";
 import axios from "../../api/axios";
 import FriendRequests from './FriendRequests';
 import useSocket from "../../hooks/useSocket";
+import PeopleIcon from '@mui/icons-material/People';
+import CircleNotificationsIcon from '@mui/icons-material/CircleNotifications';
 
 
 const Navbar = () => {
@@ -33,13 +34,12 @@ const Navbar = () => {
 
   const logout = async (e) => {
     e.preventDefault();
-    const res = await axios.post('http://localhost:8080/auth/logout', {});
+    await axios.post('http://localhost:8080/auth/logout', {});
     socket.disconnect();
     setAuth({})
     localStorage.removeItem('user');
     navigate('/login')
   }
-
   const handleSearch = async (e) => {
     if (e.key === "Enter") {
       // axios.get('')
@@ -53,21 +53,30 @@ const Navbar = () => {
   }
 
   return (
-    <div className="navbar">
+    <div className="navbar" style={{ width:'100%' }}>
       <div className="left">
         <Link to="/" style={{ textDecoration: "none" }}>
-          <span><Link to="/" style={{textDecoration:'none'}}>PetsHub</Link></span>
+          <span><Link to="/" style={{textDecoration:'none',color:'white'}}>PetsHub</Link></span>
         </Link>
+        
         <HomeOutlinedIcon />
         {darkMode ? (
-          <WbSunnyOutlinedIcon onClick={toggle} />
+          <WbSunnyOutlinedIcon />
         ) : (
-          <DarkModeOutlinedIcon onClick={toggle} />
+          <DarkModeOutlinedIcon />
         )}
         <GridViewOutlinedIcon />
-        <div className="search">
+        <div className="search"            
+        style={{
+                padding: '10px',
+                borderRadius: '15px',
+                marginTop:'10px',
+                marginLeft:'5px',
+                opacity:"0.9",
+                height:"40px"
+              }}>
           <SearchOutlinedIcon />
-          <input type="text" placeholder="Search..." value={search} onChange={(e) => setSearch(e.target.value)} onKeyUp={handleSearch} />
+          <input id="search" type="text" placeholder="Search..." value={search} onChange={(e) => setSearch(e.target.value)} onKeyUp={handleSearch} style={{ color: 'black', opacity: "0.9",border:'none'}} />
         </div>
       </div>
       <div className="right">
@@ -75,41 +84,47 @@ const Navbar = () => {
           display: 'flex',
           alignContent: 'center',
           justifyContent: 'center',
-          
         }}>
-          <div>
-                <Dropdown/>
-         </div>
-      
-          <div>
-              <MessageDropdown />
-        </div>
-          
-          <div>
+          <div >
              <FriendRequests/>
-         </div>
+          </div>
+             
+          <div style={{marginRight:"20px"}}>
+               <NotifcationDropdown/>
+          </div>
+      
+              {/* <MessageDropdown /> */}
+          
+
+
+
+          <div style={{marginRight:'18px'}}>
+            <FontAwesomeIcon icon={faDoorOpen} onClick={logout} style={{cursor:'pointer'}}/>
+
+          </div>
      
      
        </div>
 
-        <FontAwesomeIcon icon={faDoorOpen} onClick={logout} style={{cursor:'pointer'}}/>
 
-        <Link  to={`/profile/${auth._id}`}>
+        {/* <Link  to={`/profile/${auth._id}`}>
           <PersonOutlinedIcon />
-        </Link>
+        </Link> */}
+        
+
       
      
           {/* <div><NotificationsOutlinedIcon /></div> */}
       
-        <div className="user">
+        <div className="user" style={{marginRight:'30px'}}>
           
           <img
             // src={currentUser.photos.length > 0 ?  currentUser.photos[0]?.url : {ProfilePicture}}
-            src={ProfilePicture}
+            src={auth?.currentPhoto ? auth?.currentPhoto?.url : ProfilePicture}
             alt=""
           />
           {/* <span>{currentUser.firstname}</span> */}
-          <Link  to={`/profile/${auth._id}`}>{auth.firstname} {' '} {auth.lastname}</Link>
+          <Link  to={`/profile/${auth._id}`} style={{textTransform:'capitalize',color:'white'}}>{auth.firstname} {' '} {auth.lastname}</Link>
           {/* Link to my profile */}
         </div>
       </div>

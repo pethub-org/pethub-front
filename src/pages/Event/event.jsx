@@ -4,6 +4,7 @@ import EventImage from '../../assets/event_img.jpg'
 import { useNavigate } from 'react-router-dom';
 import useAuth from '../../hooks/useAuth';
 import { axiosPrivate } from '../../api/axios';
+import Button from './Button';
 
 const Event = () => {
   const [toggleForm, setToggleForm] = useState(false);
@@ -12,7 +13,12 @@ const Event = () => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [eventDate, setEventDate] = useState('');
+  const [image, setImage] = useState(null);
   const id = useId()
+
+  const handleSelectFile = (e) => {
+    setImage(e.target.files[0])
+  }
 
   const navigate = useNavigate();
 
@@ -54,16 +60,13 @@ const Event = () => {
 
   const handleCreateEvent = async (e) => {
     e.preventDefault();
-    const source = axiosPrivate.CancelToken.source()
-    const config = {cancelToken:source.token}
-    const res = await axiosPrivate.post('/events', { title, description, eventDate });
+    const res = await axiosPrivate.post('/events', { title, description, eventDate ,image},{ headers: { "Content-Type": 'multipart/form-data' } });
+    setEvents(prevEvents => [...prevEvents,res.data.event])
     setTitle('')
     setDescription('')
     setEventDate('')
   }
   useEffect(() => {
-    // const source = axiosPrivate.CancelToken.source()
-    // const config = { cancelToken: source.token }
     let isMounted = true
     const controller = new AbortController();
     
@@ -80,86 +83,47 @@ const Event = () => {
         }
   }, [toggleForm])
     
-  const renderEvents = events.map((event, i) => {
+  const renderEvents = events?.map((event, i) => {
     const formatedDate = new Intl.DateTimeFormat(undefined, { dateStyle: "long" }).format(new Date(event.eventDate));
     const isParticipated = event.participants.find((id) => id === auth._id)
 
-    const button = !isParticipated ?
-          <button className={style.button} key={event._id} onClick={() => handleParticipate(event)}>Pariticipate</button>
-      : <button className={style.button} key={event._id} onClick={() => handleUnparticipate(event)}>Leave</button>
+    // const button = !isParticipated ?
+    //       <button className={style.button} key={event._id} onClick={() => handleParticipate(event)}>Pariticipate</button>
+    //   : <button className={style.button} key={event._id} onClick={() => handleUnparticipate(event)}>Leave</button>
 
     const isMyEvent = event.creatorId === auth._id 
 
 
-    const actionButtons = isMyEvent ?
-      <>
-       <button className={style.button} key={event._id} onClick={() => handleEditEvent(event)}> Edit</button>
-       <button className={style.button} key={id} onClick={() => handleDeleteEvent(event)}> Delete</button>
-      </>
-      : null;
+    // const actionButtons = isMyEvent ?
+    //   <>
+    //    <button className={style.button} key={event._id} onClick={() => handleEditEvent(event)}> Edit</button>
+    //    <button className={style.button} key={id} onClick={() => handleDeleteEvent(event)}> Delete</button>
+    //   </>
+    //   : null;
+    
+
     return (
     <div className={style.flex} key={i}>
 
       <div className={style.item}>
-        <img src={EventImage} alt="img" className={style.img} />
+        <img src={event?.image ? event?.image : EventImage} alt="img" className={style.img} />
         <span className={style.date}>{formatedDate}</span>
         <p className={style.title}>{event.title}</p>
           <p className={style.description}>{event.description}</p>
-            {isMyEvent ? actionButtons : button}
+          {/* {isMyEvent ? actionButtons : button} */}
+          <Button isMyEvent={isMyEvent} event={event} isParticipated={isParticipated} setEvents={setEvents}/>
         
       </div>
 
      </div>
       )
     
-      {/* <div className={style.item}>
-                  <img src={EventImage} alt="img" className={style.img} />
-                  <span className={style.date}>SAT, APR 15 AT 8 PM</span>
-                  <p className={style.title}>Ooredoo Night Run By Xiaomi</p>
-                  <p className={style.description}>Avenue Habib Bourguiba</p>
-                  <button className={style.button}>pariticipate</button>
-          </div> */}
-      {/*           
-            <div className={style.item}>
-                  <img src={EventImage} alt="img" className={style.img} />
-                  <span className={style.date}>SAT, APR 15 AT 8 PM</span>
-                  <p className={style.title}>Ooredoo Night Run By Xiaomi</p>
-                  <p className={style.description}>Avenue Habib Bourguiba</p>
-                  <button className={style.button}>pariticipate</button>
-            </div> */}
+
         
 
 })
     {/* First Ligne */}
-   
 
-        {/* Second Ligne */}
-        {/* <div className={style.flex}>
-
-            <div className={style.item}>
-                  <img src={EventImage} alt="img" className={style.img} />
-                  <span className={style.date}>SAT, APR 15 AT 8 PM</span>
-                  <p className={style.title}>Ooredoo Night Run By Xiaomi</p>
-                  <p className={style.description}>Avenue Habib Bourguiba</p>
-                  <button className={style.button}>pariticipate</button>
-            </div>
-            <div className={style.item}>
-                  <img src={EventImage} alt="img" className={style.img} />
-                  <span className={style.date}>SAT, APR 15 AT 8 PM</span>
-                  <p className={style.title}>Ooredoo Night Run By Xiaomi</p>
-                  <p className={style.description}>Avenue Habib Bourguiba</p>
-                  <button className={style.button}>pariticipate</button>
-          </div>
-          
-            <div className={style.item}>
-                  <img src={EventImage} alt="img" className={style.img} />
-                  <span className={style.date}>SAT, APR 15 AT 8 PM</span>
-                  <p className={style.title}>Ooredoo Night Run By Xiaomi</p>
-                  <p className={style.description}>Avenue Habib Bourguiba</p>
-                  <button className={style.button}>pariticipate</button>
-            </div>
-        
-        </div> */}
   
   
 const createEventForm = <>
@@ -175,7 +139,7 @@ const createEventForm = <>
               </div>
               <div className={style.formControl}>
                 <label className={style.label}> Event Image :</label>
-                 <input type="file" name="file" placeholder='File' />
+                 <input type="file" name="image" placeholder='File' onChange={handleSelectFile}/>
               </div>
               <div className={style.formControl}> 
                 <label className={style.label}>Event Date :</label>
@@ -186,7 +150,7 @@ const createEventForm = <>
                 alignItems: 'center',
                 justifyContent:'center'
               }}>
-                <button className={style.button} onClick={handleCreateEvent}>Create</button>
+                <button className={style.shareButton}  onClick={handleCreateEvent}>Create</button>
               </div>
             </div>
           </form>
@@ -202,7 +166,7 @@ const createEventForm = <>
           <h1>Events</h1>
          
         </div>
-         <button onClick={handleToggleForm}>{!toggleForm ? 'Create Event?' : 'Show Available Events'}  </button>
+         <button onClick={handleToggleForm} className={style.shareButton}>{!toggleForm ? 'Create Event?' : 'Show Available Events'}  </button>
         {!toggleForm && renderEvents}
         {toggleForm && createEventForm}
         

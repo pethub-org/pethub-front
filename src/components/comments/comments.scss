@@ -50,6 +50,7 @@
      }
     .comment {
       margin: 10px 15px;
+      margin-top: 10px;
       display: flex;
       justify-content: space-around;
       gap: 20px;
@@ -106,7 +107,9 @@
         flex:1;
         align-self: center;
         color: gray;
-        font-size: 12px;
+        font-size: 10px;
+        margin-right: 60px;
+        margin-left: 60px;
       }
     }
   
@@ -126,6 +129,39 @@
           background-color: white;
         }
       }
+    }
+  }
+  .likes {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+  
+    .like-button {
+      background-color: transparent;
+      border: none;
+      cursor: pointer;
+      outline: none;
+      margin-right: 5px;
+  
+      &:hover {
+        transform: scale(1.2);
+        background-color: #222;
+      }
+    }
+  
+    .num-likes {
+      color: #777;
+      margin-left: 5px;
+    }
+  
+    .like-icon {
+      color: red;
+      margin-right: 5px;
+    }
+  
+    .unlike-icon {
+      color: #777;
+      margin-right: 5px;
     }
   }
 
