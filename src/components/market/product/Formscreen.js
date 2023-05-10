@@ -34,7 +34,7 @@ function FormScreen() {
 
 
   const addNewProduct = () => {
-    axios.post('/api/products/', { name, description, selectedCategory, price, image, userId: user._id }, { headers: { "Content-Type": 'multipart/form-data' } }).then(response => {
+    axios.post('/api/products/', { name, description, category:selectedCategory, price, image, userId: user._id }, { headers: { "Content-Type": 'multipart/form-data' } }).then(response => {
       console.log(response)
     })
     navigate('/market')
