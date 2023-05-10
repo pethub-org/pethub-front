@@ -54,7 +54,7 @@ const NotificationComponent = ({notification,setNotifications}) => {
          <img src={defaultPicture} alt="profile pic" className={style.img} />
       </div>
       <div className={style.informations}>
-        <p style={{fontSize:'12px'}}><span style={{fontSize:'12px',textTransform:'capitalize'}} className={style.username}>{notification.sender.firstname}</span> : {notification.type === 'like' ? 'Liked Your Post' : 'Commented On Your Post'}</p>
+        <p style={{fontSize:'12px'}}><span style={{fontSize:'12px',textTransform:'capitalize'}} className={style.username}>{notification?.sender?.firstname}</span> : {notification?.type === 'like' ? 'Liked Your Post' : 'Commented On Your Post'}</p>
         <span>{formatedDate}</span>
         <small style={{alignSelf:'end',color:'black',fontSize:'10px',fontWeight:'600'}}>{notification.seen ? 'seen' : 'Not seen'}</small>
       </div>
