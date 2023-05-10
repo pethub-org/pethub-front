@@ -4,8 +4,12 @@ import { io } from "socket.io-client";
 
 
 
-const socket = io("http://localhost:8080", {
-    autoConnect: true
+// const socket = io("http://localhost:8080", {
+//     autoConnect: true
+// });
+
+const socket = io("https://pethub-api.onrender.com", {
+    autoConnect: false
 });
 
 
