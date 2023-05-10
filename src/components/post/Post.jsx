@@ -37,7 +37,7 @@ const Post = ({ post, setPosts }) => {
   const [islike, setIsLike] = useState(false)
   const [image, setImage] = useState('')
   const [desc, setDesc] = useState('');
-  
+  const [isShared, setIsShared] = useState(false);
   //transorme lpost lel update
   const [updateMode, setUpdateMode] = useState(false);
   const axios = useAxiosPrivate();
@@ -50,7 +50,7 @@ const Post = ({ post, setPosts }) => {
 
   useEffect(() => {
     const fetchUser = async () => {
-      const res = await axios.get(`/api/users/${post.userId}`);
+      const res = await axios.get(`/users/${post.userId._id}`);
       setUser(res.data)
       setDesc(res.data.desc)
       setImage(res.data.image)
@@ -101,7 +101,7 @@ const Post = ({ post, setPosts }) => {
     try {
       navigator.clipboard.writeText(`http://localhost:3000/post/${post._id}`)
       //alert("Link copied to clipboard!");
-      toast( 'Link post copied')
+      toast( 'Link post copied' , {position:'bottom-right'})
 
     }
     catch (err) {
@@ -115,8 +115,9 @@ const Post = ({ post, setPosts }) => {
   const shareHandler = async () => {
     try {
       await axios.post(`/api/posts/${post._id}/share`, { userId: currentUser._id });
+      setIsShared(true);
       //alert('Post shared!');
-      toast(currentUser.firstname.charAt(0).toUpperCase()+ currentUser.firstname.slice(1)+' ' + currentUser.lastname.charAt(0).toUpperCase() +currentUser.lastname.slice(1) + ' ' + 'has shared your post')
+      toast(currentUser.firstname.charAt(0).toUpperCase()+ currentUser.firstname.slice(1)+' ' + currentUser.lastname.charAt(0).toUpperCase() +currentUser.lastname.slice(1) + ' ' + 'has shared your post', {position:'bottom-right'})
   
     } catch (err) {
       // console.log(err);
@@ -132,7 +133,7 @@ const Post = ({ post, setPosts }) => {
     try {
       await axios.post(`/api/posts/${post._id}/report`, { reason: reportReason });
       //alert('Post reported as inappropriate');
-      toast( 'Post reported as inappropriate')
+      toast( 'The post has been reported by ' + ' ' + currentUser.firstname.charAt(0).toUpperCase()+ currentUser.firstname.slice(1)+' ' + currentUser.lastname.charAt(0).toUpperCase() +currentUser.lastname.slice(1)  , {position:"bottom-right"})
       setShowReportForm(false);
       setReportReason('');
     } catch (error) {
@@ -141,10 +142,14 @@ const Post = ({ post, setPosts }) => {
     }
   };
   if(post?.userId?._id === currentUser?._id)
-
+{
   return (
+    
     <div className='post'>
+      
+       {isShared && <h2>{currentUser.firstname}{' '}{currentUser.lastname} has shared the post</h2>}
       <div className="container">
+     
         <div className="user">
           <div className="userInfo">
             <Link to={`/profile/${post?.userId?._id}`} style={{ textDecoration: "none", color: "inherit" }}>
@@ -185,15 +190,15 @@ const Post = ({ post, setPosts }) => {
               <a onClick={() => setShowReportForm(true)}><ReportGmailerrorredOutlinedIcon /> Report Post</a>
               {showReportForm && (
                 <form className='reportForm' onSubmit={handleReportSubmit}>
-                  <label className='report'>
+                  <label className='report' style={{marginLeft:"10px"}} >
                     Reason for report:
                     <input className='reportInput' type="text" value={reportReason} onChange={(e) => setReportReason(e.target.value)} placeholder='Write the reason of your report' style={{
                       padding: '15px',
                       borderRadius: '15px',
                       marginTop: '5px',
-                      marginLeft: '6px',
+                      marginLeft: '8px',
                       marginBottom: '10px',
-                      width: '100%',
+                      width: '90%',
                       height: '50px',
                       border: "none",
                       opacity: "0.9"
@@ -201,7 +206,7 @@ const Post = ({ post, setPosts }) => {
                   </label>
                   <div className='reportBtns' style={{marginBottom:"15px",borderRadius:"12px"}}>
                     <button className='reportBtn' type="submit">Report post</button>
-                    <button className='cancelBtn' type="button" onClick={() => setShowReportForm(false)}>Cancel</button>
+                    <button className='cancelBtn' type="button" onClick={() => {setShowReportForm(false);setReportReason("");}}>Cancel</button>
                   </div>
                 </form>
               )}
@@ -239,7 +244,8 @@ const Post = ({ post, setPosts }) => {
           (
             <div className="content" style={{ color: "blue", lineHeight: "1.8" }}>
               {post.hashtags && <p>#{post.hashtags}</p>}
-              {post.image ? <img src={PF + post.image} alt="image" /> : <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT8IHIodtO_PbMwrmVGhxM0DWGUBuQCiVcQRQ&usqp=CAU" alt="image not available" style={{ borderRadius: "20px" }} />}
+              {post.image && <img src={post.image} alt="post" />}
+              {/* {post.image ? <img src={post.image} alt="image" /> : <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT8IHIodtO_PbMwrmVGhxM0DWGUBuQCiVcQRQ&usqp=CAU" alt="image not available" style={{ borderRadius: "20px" }} />} */}
 
             </div>
           )
@@ -272,8 +278,10 @@ const Post = ({ post, setPosts }) => {
       </div>
     </div>
     )
-  
-  return   (
+
+  }
+  else {
+     return   (
     <div className='post'>
       <div className="container">
         <div className="user">
@@ -376,7 +384,7 @@ const Post = ({ post, setPosts }) => {
           (
             <div className="content" style={{ color: "blue", lineHeight: "1.8" }}>
               {post.hashtags && <p>#{post.hashtags}</p>}
-              {post.image ? <img src={PF + post.image} alt="image" /> : <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT8IHIodtO_PbMwrmVGhxM0DWGUBuQCiVcQRQ&usqp=CAU" alt="image not available" style={{ borderRadius: "20px" }} />}
+              {post.image ? <img src={post.image} alt="post" /> : <></>}
 
             </div>
           )
@@ -411,6 +419,9 @@ const Post = ({ post, setPosts }) => {
       </div>
     </div>
   )
+  }
+    
+  
 }
 
 

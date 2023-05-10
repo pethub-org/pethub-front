@@ -13,7 +13,7 @@ import useSocket from "../../hooks/useSocket";
 
 
 const RightBar = () => {
-  const { auth } = useAuth();
+  const { auth,setAuth } = useAuth();
   // console.log({auth})
   // all users conversations
   const [conversations, setConversations] = useState([]);
@@ -24,19 +24,36 @@ const RightBar = () => {
   
   useEffect(()=>{
     const fetchUser = async()=>{
-      const {data} = await axiosPrivate.get("/users");
+      let { data } = await axiosPrivate.get("/users");
+      data = data.map(user => {
+        const currentPhoto = user.photos.find(photo => photo.isMain)
+        return {
+          ...user,
+          currentPhoto
+        }
+      })
+      console.log({data})
       setPersons(data)
       // console.log(data)
     }
     fetchUser()
+
+    return () => {
+        toast.dismiss();
+
+    }
   },[]);
 
 
   useEffect(() => {
     axiosPrivate.get(`/conversations/${auth._id}`).then(res => {
       setConversations(res.data)
+      // toast.configure({duration:'200'})
       // console.log({res})
     })
+    return () => {
+        toast.dismiss();
+    }
   },[])
 
   // show private chatbox
@@ -50,7 +67,7 @@ const RightBar = () => {
   const [friendList, setFriendList] = useState([])
 
 
-  const notify = (data) => toast(data?.content ?data.content :'You have a new notification !' , { position: 'bottom-right', duration: '1000' });
+  const notify = (data) => toast('You have a new notification !' , { position: 'top-right'},);
   
   useEffect(() => {
     socket.on('notification', (data) => {
@@ -61,14 +78,44 @@ const RightBar = () => {
       }
       notify(data)
       return () => {
-        socket.off('notification')
+        // socket.off('notification')
+        toast.dismiss();
+      }
+    })
+
+    socket.on('getNewFriend', (data) => {
+      // console.log({data})
+      // console.log(data)
+      // console.log({ data })
+      // console.log(data.sender === auth._id)
+      const userId = data.sender === auth._id ? data.receiver : data.sender;
+      // console.log({userId})
+
+      axiosPrivate.get('/users/' + userId).then(response => {
+        const user = response.data.user;
+
+        setAuth(prev => {
+          return {
+            ...prev,
+            friendList: [...prev.friendList,user]
+          }
+        })
+      })
+      return () => {}
+    })
+
+    socket.on('getMessage', (data) => {
+      notify({ content: 'You have recieved a message.' })
+      return () => {
+        toast.dismiss();
+
       }
     })
 
     // return () => {
     //   socket.off('notification');
     // }
-  }, [socket,socket.id])
+  }, [])
 
   
   useEffect(() => {
@@ -88,7 +135,7 @@ const RightBar = () => {
                                                 setMessages={setMessages}
                                                 />)
     setFriendList(friends)
- },[auth.friendList,conversations])
+ },[auth.friendList,conversations,friendList])
   return (
     <div className="rightBar">
       <div className="container" >
@@ -112,7 +159,7 @@ const RightBar = () => {
    
         </div>
 
-        <Toaster />
+        <Toaster  />
         
       </div>
     </div>

@@ -4,7 +4,7 @@ import { io } from "socket.io-client";
 
 
 
-const socket = io("https://pethub-api.onrender.com/", {
+const socket = io("http://localhost:8080", {
     autoConnect: true
 });
 
@@ -25,6 +25,11 @@ const SocketContextProvider = ({ children }) => {
         });
 
         return () => {
+            socket.off('notifcation');
+            socket.off('getUser');
+            socket.off('addUser');
+            socket.off('getMessage');
+            socket.off('getNewFriend');
             socket.disconnect();
         }
     }, [])

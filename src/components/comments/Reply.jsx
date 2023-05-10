@@ -7,6 +7,7 @@ import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined
 import ModeEditOutlineOutlinedIcon from '@mui/icons-material/ModeEditOutlineOutlined';
 import SendIcon from '@mui/icons-material/Send';
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
+import defaultUser from '../../assets/defaultUser.png';
 
 function Reply({ commentId }) {
   const [replies, setReplies] = useState([]);
@@ -79,7 +80,7 @@ function Reply({ commentId }) {
   }
 
   return (
-    <div className="reply">
+    <div className="reply" >
       <h4>Replies</h4>
       <form onSubmit={handleSubmit}>
         <input
@@ -115,9 +116,9 @@ function Reply({ commentId }) {
       <ul>
         {replies.map((reply) => (
           <div className="comment" key={reply._id}>
-            <img src={currentUser?.profilePicture} alt="User" className="user-image" />
-            <div className="info">
-              <span >{currentUser?.firstname} {' '} {currentUser?.lastname}</span>
+              <img src={currentUser.currentPhoto ? currentUser.currentPhoto.url : defaultUser} alt={currentUser.firstname} />
+              <div className="info">
+              <span style={{ fontSize: "15px",textTransform: "capitalize"}} >{currentUser?.firstname} {' '} {currentUser?.lastname}</span>
               {editingReply === reply._id ? (
                 <>
                   <textarea
@@ -144,10 +145,10 @@ function Reply({ commentId }) {
                   </div>
                 </>
               ) : (
-                <p>{reply.content}</p>
+                <p style={{color:"white"}}>{reply.content}</p>
               )}
               <div className="actions">
-                <span>{format(reply.createdAt)}</span>
+                <span className='date'  >{format(reply.createdAt)}</span>
                 {currentUser._id === reply.userId && (
                   <>
                     <DeleteOutlineOutlinedIcon
