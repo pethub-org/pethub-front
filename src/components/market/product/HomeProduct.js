@@ -38,21 +38,21 @@ const HomeProduct = () => {
     fetchProducts();
   }, [selectedCategory, sort, sortOrder]);
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        let url = `/api/products?sort=${sort}&sortOrder=${sortOrder}`;
-        if (selectedCategory) {
-          url = `/api/products/bycategory/${selectedCategory}`;
-        }
-        const { data } = await axios.get(url);
-        setProducts(data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    fetchProducts();
-  }, [])
+  // useEffect(() => {
+  //   const fetchProducts = async () => {
+  //     try {
+  //       let url = `/api/products?sort=${sort}&sortOrder=${sortOrder}`;
+  //       if (selectedCategory) {
+  //         url = `/api/products/bycategory/${selectedCategory}`;
+  //       }
+  //       const { data } = await axios.get(url);
+  //       setProducts(data);
+  //     } catch (error) {
+  //       console.error(error);
+  //     }
+  //   };
+  //   fetchProducts();
+  // }, [])
 
 
   const handleCategoryChange = (e) => {
