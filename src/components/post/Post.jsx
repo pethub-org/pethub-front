@@ -100,7 +100,7 @@ const Post = ({ post, setPosts }) => {
   const copyHandler = () => {
     try {
       // navigator.clipboard.writeText(`http://localhost:3000/post/${post._id}`)
-      navigator.clipboard.writeText(`https://pethub-api.onrender.com/post/${post._id}`)
+      navigator.clipboard.writeText(`https://pethub-front-git-main-pethub.vercel.app/post/${post._id}`)
       //alert("Link copied to clipboard!");
       toast( 'Link post copied' , {position:'bottom-right'})
 
