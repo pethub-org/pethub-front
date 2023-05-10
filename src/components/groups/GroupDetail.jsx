@@ -13,7 +13,7 @@ const GroupDetail = ({ groupId }) => {
 
   useEffect(() => {
     const fetchGroup = async () => {
-      const res = await axios.get(`http://localhost:8080/api/groups/${groupId}`);
+      const res = await axios.get(`/api/groups/${groupId}`);
       setGroup(res.data);
       setIsJoined(res.data.members.includes(currentUser?._id));
     };
@@ -22,7 +22,7 @@ const GroupDetail = ({ groupId }) => {
 
   const handleFollow = async () => {
     try {
-      await axios.put(`http://localhost:8080/api/groups/${groupId}/join`, { userId: currentUser._id });
+      await axios.put(`/api/groups/${groupId}/join`, { userId: currentUser._id });
       setIsJoined(true);
     } catch (error) {
       console.log(error);
@@ -31,7 +31,7 @@ const GroupDetail = ({ groupId }) => {
 
   const handleUnfollow = async () => {
     try {
-      await axios.put(`http://localhost:8080/api/groups/${groupId}/unfollow`, { userId: currentUser?._id });
+      await axios.put(`/api/groups/${groupId}/unfollow`, { userId: currentUser?._id });
       setIsJoined(false);
     } catch (error) {
       console.log(error);
