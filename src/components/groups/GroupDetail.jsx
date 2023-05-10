@@ -10,7 +10,7 @@ const GroupDetail = ({ groupId }) => {
   const axios = useAxiosPrivate();
   const [group, setGroup] = useState(null);
   const [isJoined, setIsJoined] = useState(false);
-
+ 
   useEffect(() => {
     const fetchGroup = async () => {
       const res = await axios.get(`/api/groups/${groupId}`);
