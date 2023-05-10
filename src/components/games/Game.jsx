@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import './Game.scss';
 import SportsEsportsOutlinedIcon from '@mui/icons-material/SportsEsportsOutlined';
+import useAxiosPrivate from '../../hooks/useAxiosPrivate';
+
 const Game = () => {
   const [games, setGames] = useState([]);
   const [filteredGames, setFilteredGames] = useState([]);
   const [filter, setFilter] = useState('');
+  const axios = useAxiosPrivate();
 
   useEffect(() => {
     const fetchGames = async () => {
       try {
-        const response = await axios.get('http://localhost:8080/api/games/');
+        const response = await axios.get('/api/games/');
         setGames(response.data);
       } catch (error) {
         console.error(error);
